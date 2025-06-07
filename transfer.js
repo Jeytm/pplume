@@ -23,7 +23,7 @@ async function sendAllFunds() {
     const minAmount = ethers.parseEther("8000");
 
     if (balance < minAmount) {
-      console.log("[⏸] Saldo kurang dari 8000 PLUME, tidak ditransfer.");
+      console.log("[⏸] Saldo < 8000 PLUME, tidak dikirim.");
       return;
     }
 
@@ -35,7 +35,7 @@ async function sendAllFunds() {
     const amountToSend = balance - totalGasCost;
 
     if (amountToSend <= 0n) {
-      console.log("[⚠️] Saldo tidak cukup setelah dipotong gas.");
+      console.log("[⚠️] Saldo tidak cukup setelah gas.");
       return;
     }
 
@@ -50,22 +50,21 @@ async function sendAllFunds() {
       gasPrice,
     });
 
-    console.log(`[⏳] Tx dikirim. Hash: ${tx.hash}`);
-
+    console.log(`[⏳] TX hash: ${tx.hash}`);
     const receipt = await tx.wait();
-    console.log(`[✅] Transaksi sukses! Block: ${receipt.blockNumber}`);
+    console.log(`[✅] TX berhasil! Block: ${receipt.blockNumber}`);
 
     const sisa = await provider.getBalance(wallet.address);
-    console.log(`[📉] Sisa saldo: ${ethers.formatEther(sisa)} PLUME`);
+    console.log(`[📉] Sisa: ${ethers.formatEther(sisa)} PLUME`);
   } catch (err) {
-    console.error("[❌] Error saat transfer:", err);
+    console.error("[❌] Error:", err.message);
   }
 }
 
 (async () => {
   while (true) {
-    console.log(`[🔄] Mengecek saldo... ${new Date().toLocaleString()}`);
+    console.log(`[🔄] Cek saldo... ${new Date().toLocaleString()}`);
     await sendAllFunds();
-    await new Promise(res => setTimeout(res, 10_000)); // jeda 10 detik
+    // tanpa delay
   }
 })();
